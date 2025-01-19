@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get User Info</title>
+</head>
+<body>
+    <h1>TDD</h1>
+    <button onclick="getUserInfo()">Get User Info</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function getUserInfo() {
+            const response = await fetch("/api/userinfo", { method: "POST" });
+            const data = await response.json();
+            document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

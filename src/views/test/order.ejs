@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="/css/order.css">
+</head>
+<body>
+    <div id="basic-info" class="section">
+        <p id="user-name">홍길동 (user.name)</p>
+        <p id="store-id">대전본점 (store.id)</p>
+    </div>
+
+    <div id="order-content" class="section">
+        <p>Order.content</p>
+    </div>
+
+    <div id="points-area" class="section">
+        <p id="user-points">홍길동님의 포인트: 5412p</p>
+        <div>
+            <input type="number" id="point-input" placeholder="포인트 입력" min="0">
+            <button id="apply-full-points">전액 사용</button>
+        </div>
+    </div>
+
+    <div id="payment-summary" class="section">
+        <p>주문금액: <span id="order-amount">17,400원</span></p>
+        <p>할인금액: <span id="discount-amount">0원</span></p>
+        <p>총 결제금액: <span id="final-amount">18,400원</span></p>
+    </div>
+
+    <div id="payment-method" class="section">
+        <h3>결제방식</h3>
+        <div>
+            <input type="radio" id="card-payment" name="payment-method" value="card" checked>
+            <label for="card-payment">카드 결제</label>
+        </div>
+    </div>
+
+    <div id="payment-button">
+        <button id="proceed-payment">결제하기</button>
+    </div>
+
+    <script>
+        const orderId = new URLSearchParams(window.location.search).get('order_Id');
+
+        async function fetchOrderDetails() {
+            const userResponse = await fetch('/api/userinfo', { method: 'POST' });
+            const userInfo = await userResponse.json();
+
+            const orderResponse = await fetch('/api/order/get', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderId }),
+            });
+            const orderInfo = await orderResponse.json();
+
+            if (userInfo.success && orderInfo.success) {
+                document.getElementById('user-name').innerText = `${userInfo.user.name}`;
+                document.getElementById('store-id').innerText = `${orderInfo.order.store_id}`;
+                document.getElementById('order-content').innerText = `${orderInfo.order.content}`;
+                document.getElementById('user-points').innerText = `${userInfo.user.name}님의 포인트: ${userInfo.user.points}p`;
+                document.getElementById('order-amount').innerText = `${orderInfo.order.price}원`;
+                document.getElementById('discount-amount').innerText = `${orderInfo.order.discount_point + orderInfo.order.discount_coupon || 0}원`;
+                document.getElementById('final-amount').innerText = `${orderInfo.order.price}원`;
+            }
+        }
+
+        document.getElementById('apply-full-points').addEventListener('click', () => {
+            const userPoints = parseInt(document.getElementById('user-points').innerText.split(': ')[1].replace('p', ''));
+            const orderAmount = parseInt(document.getElementById('order-amount').innerText.replace('원', ''));
+            const maxPoints = Math.min(userPoints, orderAmount);
+            document.getElementById('point-input').value = maxPoints;
+            updateDiscount(maxPoints);
+        });
+
+        document.getElementById('point-input').addEventListener('input', (event) => {
+            const points = parseInt(event.target.value) || 0;
+            updateDiscount(points);
+        });
+
+        async function updateDiscount(points) {
+            if (!points) { points = 0; }
+            const orderAmount = parseInt(document.getElementById('order-amount').innerText.replace('원', '')) || 0;
+            const finalAmount = orderAmount - points;
+            document.getElementById('discount-amount').innerText = `${points || 0}원`;
+            document.getElementById('final-amount').innerText = `${finalAmount}원`;
+        }
+
+        document.getElementById('proceed-payment').addEventListener('click', async () => {
+            const pointsToUse = parseInt(document.getElementById('point-input').value) || 0;
+            if (pointsToUse > 0) {
+                const pointResponse = await fetch('/order/use/point', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: orderId, point_amount: pointsToUse }),
+                });
+                const pointResult = await pointResponse.json();
+                if (!pointResult.success) {
+                    alert(pointResult.message);
+                    return;
+                }
+            }
+
+            const paymentResponse = await fetch('/order/payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    order_id: orderId,
+                    redirect_to: "http://localhost:3000/"
+                }),
+            });
+
+            const paymentResult = await paymentResponse.json();
+            if (paymentResult.success) {
+                window.location.href = `/order/payment?token=${paymentResult.token}`;
+            } else {
+                alert(paymentResult.message);
+            }
+        });
+
+        fetchOrderDetails();
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "sample_xpress_ejs_webapp",
+  "version": "1.0.0",
+  "description": "sample express-ejs web application",
+  "main": "app.js",
+  "bin": {
+    "sample_xpress_ejs_webapp": "bin/www.js"
+  },
+  "scripts": {
+    "test": "nodemon ./bin/www.js",
+    "start": "nodemon ./bin/www.js"
+  },
+  "author": "Kang Serius",
+  "license": "ISC",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.7.9",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "googleapis": "^144.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.9"
+  }
+}

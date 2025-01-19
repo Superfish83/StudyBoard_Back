@@ -1,0 +1,10 @@
+/* Header styling */
+header {
+    background-color: #ffffff;
+    color: #000000;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}

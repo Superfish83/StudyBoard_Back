@@ -1,0 +1,23 @@
+[
+  {
+    "id": "4ec5200d-aff5-41a6-a866-1c2c29988046",
+    "title": "banner01",
+    "image_loc": "/event/banner/4ec5200d-aff5-41a6-a866-1c2c29988046.png",
+    "start_date": "2024-12-20",
+    "end_date": "2025-01-02"
+  },
+  {
+    "id": "7d42b359-f80a-4bb0-9869-735ffd9e34ac",
+    "title": "banner02",
+    "image_loc": "/event/banner/7d42b359-f80a-4bb0-9869-735ffd9e34ac.png",
+    "start_date": "2024-12-20",
+    "end_date": "2025-01-02"
+  },
+  {
+    "id": "7239fd5a-fcaa-40b6-92b5-0873b66ac74a",
+    "title": "banner03",
+    "image_loc": "/event/banner/7239fd5a-fcaa-40b6-92b5-0873b66ac74a.png",
+    "start_date": "2024-12-20",
+    "end_date": "2025-01-02"
+  }
+]

@@ -1,0 +1,118 @@
+/* General styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+}
+
+/* Header */
+header {
+    text-align: center;
+    background-color: #ffffff;
+    padding: 15px 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Banner Section */
+#banner {
+    width: 100%;
+    height: 30vw; /* Default for wider screens: 40% of the screen width */
+    overflow: hidden;
+    position: relative;
+    background-color: #d3d3d3; /* Debugging background color */
+}
+
+@media (max-width: 768px) {
+    /* For narrow screens (e.g., phones): make the banner square */
+    #banner {
+        height: 80vw; /* Equal to the width for a square shape */
+    }
+}
+
+.banner-slider {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-in-out; /* Slide transition */
+}
+
+.banner-slide {
+    flex: 0 0 100%; /* Each slide takes up 100% of the slider width */
+    height: 100%; /* Match the height of the slider */
+    background-size: cover; /* Fit the image to the slide area */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat;
+}
+
+/* Pagination Dots */
+#banner .pagination {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#banner .pagination .dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 5px;
+    background-color: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#banner .pagination .dot.active {
+    background-color: #000;
+}
+
+/* User Info Section */
+#user-info {
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+/* User Info Rows */
+.user-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    padding: 10px 0;
+    background-color: #fff;
+    margin: 5px 10%;
+    position: relative;
+}
+
+/* Name Styling */
+.user-info-row span.name {
+    font-weight: bold;
+    font-size: 1.4rem; /* Slightly larger font for name */
+    text-align: left;
+}
+
+/* Level Styling */
+.user-info-row span.level {
+    font-size: 1.2rem; /* Regular font size for level */
+    text-align: right;
+}
+
+/* Divider */
+.user-info-row::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0%;
+    right: 0%;
+    height: 1px;
+    background-color: #ccc;
+}
+
+.user-info-row:last-child::after {
+    display: none;
+}
