@@ -25,22 +25,22 @@ app.set("view engine", "ejs");
 
 // use middle ware
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(express.static(`${__dirname}/src/public`));
 app.use(cors());
 app.use(
-  serveStatic(path.join(__dirname, "public"), {
-    setHeaders: (res, path) => {
-      if (path.endsWith(".css")) {
-        res.setHeader("Content-Type", "text/css");
-      }
-      if (path.endsWith(".js")) {
-        res.setHeader("Content-Type", "application/javascript");
-      }
-    },
-  })
+    serveStatic(path.join(__dirname, "public"), {
+        setHeaders: (res, path) => {
+            if (path.endsWith(".css")) {
+                res.setHeader("Content-Type", "text/css");
+            }
+            if (path.endsWith(".js")) {
+                res.setHeader("Content-Type", "application/javascript");
+            }
+        },
+    })
 );
 
 // use personal middleware

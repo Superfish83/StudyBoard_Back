@@ -1,22 +1,23 @@
 // UserManage.js
+// unused.
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const userFilePath = path.join(__dirname, '../../filedb/userList.json');
-const makeId = require('../utility/makeId');
+const userFilePath = path.join(__dirname, "../../filedb/userList.json");
+const makeId = require("../utility/makeId");
 
-const msg_doesnot_regist    = '가입하지 않은 이메일입니다'
-const msg_already_regist    = '이미 가입된 이메일입니다.'
+const msg_doesnot_regist = "가입하지 않은 이메일입니다";
+const msg_already_regist = "이미 가입된 이메일입니다.";
 
 class UserManage {
     // Load user data from user.json
     static loadUserData() {
         try {
-            const data = fs.readFileSync(userFilePath, 'utf8');
+            const data = fs.readFileSync(userFilePath, "utf8");
             return JSON.parse(data);
         } catch (err) {
-            console.error('Error reading user.json:', err);
+            console.error("Error reading user.json:", err);
             return [];
         }
     }
@@ -24,9 +25,13 @@ class UserManage {
     // Save updated user data to user.json
     static saveUserData(users) {
         try {
-            fs.writeFileSync(userFilePath, JSON.stringify(users, null, 2), 'utf8');
+            fs.writeFileSync(
+                userFilePath,
+                JSON.stringify(users, null, 2),
+                "utf8"
+            );
         } catch (err) {
-            console.error('Error writing to user.json:', err);
+            console.error("Error writing to user.json:", err);
         }
     }
 
@@ -38,7 +43,7 @@ class UserManage {
     static get(id) {
         const users = UserManage.loadUserData();
         // Find user by ID or email
-        const user = users.find(user => user.id === id);
+        const user = users.find((user) => user.id === id);
         return user || null;
     }
 
@@ -50,9 +55,12 @@ class UserManage {
      */
     static login(email) {
         const users = UserManage.loadUserData();
-        const user = users.find(user => user.email === email);
-        if (user) { return { success: true, ...user }; }
-        else { return { success: false, message: msg_doesnot_regist }; }
+        const user = users.find((user) => user.email === email);
+        if (user) {
+            return { success: true, ...user };
+        } else {
+            return { success: false, message: msg_doesnot_regist };
+        }
     }
 
     /**
@@ -62,19 +70,27 @@ class UserManage {
      * @param {string} email - The email of the user trying to register.
      * @returns {Object} - Contains registration result and user information.
      */
-    static register(email, phone='01012341234', name='KangSample', member_level=1, loyalty_point=0) {
+    static register(
+        email,
+        phone = "01012341234",
+        name = "KangSample",
+        member_level = 1,
+        loyalty_point = 0
+    ) {
         const users = UserManage.loadUserData();
-        if (users.find(user => user.email === email)) { return { success: false, message: msg_already_regist }; }
+        if (users.find((user) => user.email === email)) {
+            return { success: false, message: msg_already_regist };
+        }
 
         // Register new user
         const id = makeId();
-        const newUser = { 
+        const newUser = {
             id: id,
             email: email,
             phone: phone,
             name: name,
             member_level: member_level,
-            loyalty_point: loyalty_point
+            loyalty_point: loyalty_point,
         };
         users.push(newUser);
         UserManage.saveUserData(users);
@@ -92,8 +108,10 @@ class UserManage {
      */
     static elevate(email, auth) {
         const users = UserManage.loadUserData();
-        const user = users.find(user => user.email === email);
-        if (!user) { return false; }
+        const user = users.find((user) => user.email === email);
+        if (!user) {
+            return false;
+        }
 
         // Elevate user
         user.member_level = auth;
@@ -109,7 +127,10 @@ class UserManage {
      */
     static updatePoint(id, point) {
         const users = UserManage.loadUserData();
-        const user = users.find(user => user.id === id); if (!user) { return false; }
+        const user = users.find((user) => user.id === id);
+        if (!user) {
+            return false;
+        }
         user.loyalty_point = point;
         UserManage.saveUserData(users);
         return true;
@@ -122,10 +143,13 @@ class UserManage {
      */
     static create(email) {
         const users = UserManage.loadUserData();
-        const user = users.find(user => user.email === email);
+        const user = users.find((user) => user.email === email);
 
-        if (user) { return { success: true, ...user }; }
-        else { return UserManage.register(email); }
+        if (user) {
+            return { success: true, ...user };
+        } else {
+            return UserManage.register(email);
+        }
     }
 
     /**
@@ -135,7 +159,7 @@ class UserManage {
      */
     static isExist(email) {
         const users = UserManage.loadUserData();
-        const user = users.find(user => user.email === email);
+        const user = users.find((user) => user.email === email);
         return user ? true : false;
     }
 }

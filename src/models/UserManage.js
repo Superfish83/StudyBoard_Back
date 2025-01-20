@@ -1,120 +1,70 @@
-const AWS = require("aws-sdk");
 const makeId = require("../utility/makeId");
+const db = require("../database/db");
+const JwtManage = require("./JwtManage");
 
-AWS.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
-    region: process.env.AWS_REGION,
-});
+// reuse if we were to use AWS
+// const AWS = require("aws-sdk");
+// AWS.config.update({
+//     accessKeyId: process.env.AWS_ACCESS_KEY,
+//     secretAccessKey: process.env.AWS_SECRET_KEY,
+//     region: process.env.AWS_REGION,
+// });
 
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const TABLE_NAME = ""; // TODO: Create a new table
+// const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
+const TABLE_NAME = "user";
 
 class UserManage {
     static async get(idOrEmail) {
-        const params = {
-            TableName: TABLE_NAME,
-            FilterExpression: "id = :id OR email = :email",
-            ExpressionAttributeValues: {
-                ":id": idOrEmail,
-                ":email": idOrEmail,
-            },
+        const query = {
+            sql: `SELECT * FROM \`${TABLE_NAME}\` 
+            WHERE id = ? OR email = ?`,
+            values: [idOrEmail, idOrEmail],
         };
         try {
-            const result = await dynamoDB.scan(params).promise();
-            return result.Items?.[0] || null;
+            const result = await db.query(query);
+            console.log(result);
+            return { success: true, ...(result?.[0] || null) };
         } catch (error) {
             console.error("Error fetching user by ID or email:", error);
-            return null;
+            return { success: false, message: "Failed to fetch user." };
         }
     }
 
-    static async login(email) {
+    static async login(email, pw) {
         const user = await this.get(email);
-        if (user) {
-            return { success: true, ...user };
+        if (user.success && user.pw === pw) {
+            return { success: true, user: user };
         } else {
-            return { success: false, message: "가입하지 않은 이메일입니다" };
+            return {
+                success: false,
+                message: "가입하지 않은 이메일이거나 잘못된 비밀번호입니다.",
+            };
         }
     }
 
-    static async register(
-        email,
-        phone = "01012341234",
-        name = "KangSample",
-        member_level = 1,
-        loyalty_point = 0,
-        stamp = 0
-    ) {
+    static async register(email, pw, name, ip) {
         const existingUser = await this.get(email);
-        if (existingUser) {
+        if (existingUser.success) {
             return { success: false, message: "이미 가입된 이메일입니다." };
         }
-        // Remove non-numeric characters
-        phone = phone.replace(/\D/g, "");
         const id = makeId();
-        const newUser = {
-            id,
-            email,
-            phone,
-            name,
-            member_level,
-            loyalty_point,
-            stamp,
+        const created_at = Date.now();
+        const query = {
+            sql: `INSERT INTO \`${TABLE_NAME}\` 
+            (id, email, pw, name, ip, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            values: [id, email, pw, name, ip, created_at, created_at],
         };
-        const params = { TableName: TABLE_NAME, Item: newUser };
-        // AWS
+
+        // mysql
         try {
-            await dynamoDB.put(params).promise();
-            return { success: true, ...newUser };
+            await db.query(query);
+            return { success: true, id: id };
         } catch (error) {
             console.error("Error registering user:", error);
             return { success: false, message: "Failed to register user." };
         }
-    }
-
-    static async elevate(email, auth) {
-        const user = await this.get(email);
-        if (!user) {
-            return false;
-        }
-
-        const params = {
-            TableName: TABLE_NAME,
-            Key: { id: user.id },
-            UpdateExpression: "set member_level = :auth",
-            ExpressionAttributeValues: { ":auth": auth },
-        };
-
-        try {
-            await dynamoDB.update(params).promise();
-            return true;
-        } catch (error) {
-            console.error("Error elevating user:", error);
-            return false;
-        }
-    }
-
-    static async updatePoint(id, point) {
-        const params = {
-            TableName: TABLE_NAME,
-            Key: { id },
-            UpdateExpression: "set loyalty_point = :point",
-            ExpressionAttributeValues: { ":point": point },
-        };
-
-        try {
-            await dynamoDB.update(params).promise();
-            return true;
-        } catch (error) {
-            console.error("Error updating user points:", error);
-            return false;
-        }
-    }
-
-    static async isExist(email) {
-        const user = await this.get(email);
-        return !!user;
     }
 }
 

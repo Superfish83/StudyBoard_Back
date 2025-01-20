@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
-const EXPIRE_IN  = process.env.JWT_EXPIRE_IN;
+const EXPIRE_IN = process.env.JWT_EXPIRE_IN;
 
 class JwtManage {
     /**
@@ -13,7 +13,7 @@ class JwtManage {
         const payload = {
             name: user.name,
             email: user.email,
-            id: user.id
+            id: user.id,
         };
 
         const token = jwt.sign(payload, SECRET_KEY, { expiresIn: EXPIRE_IN });
@@ -37,8 +37,11 @@ class JwtManage {
      * @returns {Object|null} - The decoded information if valid, otherwise null.
      */
     static get(token) {
-        try { return jwt.verify(token, SECRET_KEY); }
-        catch (err) { return null; }
+        try {
+            return jwt.verify(token, SECRET_KEY);
+        } catch (err) {
+            return null;
+        }
     }
 }
 
