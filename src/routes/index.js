@@ -8,16 +8,16 @@ const ctrl = require("./home.ctrl");
 
 // router.get("/", ctrl.output.root);
 router.post("/", (req, res) => {
-    console.log(req.body);
-    res.status(200).send("success");
+  console.log(req.body);
+  res.status(200).send("success");
 });
 
 // oauth    ========================================
 router.get("/login/google", ctrl.usersys.request);
 router.get("/login/google/callback", ctrl.usersys.callback);
 router.get("/logout", (req, res) => {
-    res.clearCookie("token");
-    res.redirect("/");
+  res.clearCookie("token");
+  res.redirect("/");
 });
 
 // user api ========================================

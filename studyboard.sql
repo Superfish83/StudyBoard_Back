@@ -1,5 +1,7 @@
 CREATE DATABASE studyboard;
 
+USE studyboard;
+
 CREATE TABLE `user` (
 	`id`			VARCHAR(255)	NOT NULL,
 	`pw`			VARCHAR(255)	NOT NULL,
